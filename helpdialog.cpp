@@ -11,7 +11,7 @@ helpDialog::helpDialog(QWidget *parent) : QDialog(parent),
     ui->label->setPixmap(help);
     ui->label_2->setOpenExternalLinks(true);
     //设置超链接
-    ui->label_2->setText("<a style='color: blue;' href=\"http://www.baidu.com\">linkLabel");
+    ui->label_2->setText("<a style='color: blue;' href=\"https://github.com/eeezio/NotePad--\">https://github.com/eeezio/NotePad--");
     this->resize(this->minimumSize());
 }
 
