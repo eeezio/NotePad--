@@ -9,7 +9,7 @@ mybutton::mybutton(QWidget *parent) : QPushButton(parent)
 //如下两个函数是设置鼠标悬停时按钮的放大和缩小
 void mybutton::enterEvent(QEvent *event)
 {
-    this->setIconSize(QSize(40, 40));
+    this->setIconSize(QSize(35, 35));
 }
 void mybutton::leaveEvent(QEvent *event)
 {

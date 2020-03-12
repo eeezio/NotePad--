@@ -18,6 +18,7 @@
 #include <QTextCodec>
 #include <QTimer>
 #include <QSoundEffect>
+#include <thread>
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow)
 {
@@ -25,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->setupUi(this);
     this->setWindowTitle("NotePad--");
     this->setWindowIcon(QIcon(":/image/9.ico"));
-    QPixmap marisa = QPixmap(":/image/fin.png");
+    QPixmap marisa = QPixmap("./debug/fin.png");
     int wide = ui->label->width();
     int high = ui->label->height();
     QPixmap fin_marisa = marisa.scaled(wide, high, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -165,17 +166,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     //网络搜索功能的实现
     connect(ui->netButton, &mybutton::clicked, [=]() {
         //将获取的qstring转为char*供py脚本调用
-        char *test = ui->widget_2->editor->selectedText().toUtf8().data();
-        Py_Initialize();
-        //导入py模块,注意，脚本名称不能为test。。。
-        PyObject *pModule = PyImport_ImportModule("websearch");
-        PyObject *pFun_show = PyObject_GetAttrString(pModule, "hello");
-        //设置传入参数个数
-        PyObject *args = PyTuple_New(1);
-        //如果想传入string参数，则在C++中的数据类型应为char*
-        PyTuple_SetItem(args, 0, Py_BuildValue("s", test));
-        PyEval_CallObject(pFun_show, args);
-        Py_Finalize();
+       if (ui->widget_2->editor->selectedText()=="") return;
+
+       QString scriptPath="sys.path.append('"+ QDir::currentPath()+"/debug/')";
+       auto lamThread=[=](){
+           Py_Initialize();
+           PyRun_SimpleString("import sys");
+           char*  ch;
+           QByteArray ba = scriptPath.toLatin1();
+           ch=ba.data();
+           PyRun_SimpleString(ch);
+           //导入py模块,注意，脚本名称不能为test。。。
+           PyObject *pModule = PyImport_ImportModule("websearch");
+           PyObject *pFun_show = PyObject_GetAttrString(pModule, "hello");
+           //设置传入参数个数
+           PyObject *args = PyTuple_New(1);
+           //如果想传入string参数，则在C++中的数据类型应为char*
+             char *test = ui->widget_2->editor->selectedText().toUtf8().data();
+           PyTuple_SetItem(args, 0, Py_BuildValue("s", test));
+           PyEval_CallObject(pFun_show, args);
+           Py_Finalize();
+       };
+       std::thread t(lamThread);
+       t.detach();
     });
     //查找与替换功能的实现
     connect(ui->searchButton, &mybutton::clicked, [=]() {
@@ -224,10 +237,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
         if (tohoName == "")
             return;
         //替换原看板娘
-        QFile finFile(":/image/fin.png");
+        QFile finFile(QDir::currentPath()+"/debug/fin.png");
         finFile.remove();
         QFile tempFile(tohoName);
-        tempFile.copy(tohoName, ":/image/fin.png");
+        tempFile.copy(tohoName,QDir::currentPath()+"/debug/fin.png");
         QPixmap toho = QPixmap(tohoName);
         int wide = this->ui->label->width();
         int high = this->ui->label->height();
