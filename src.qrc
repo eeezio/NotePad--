@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/dic.png</file>
+        <file>image/open.png</file>
+        <file>image/save.png</file>
+        <file>image/fin.png</file>
+        <file>image/animal.png</file>
+        <file>image/ding.png</file>
+        <file>image/help.png</file>
+        <file>image/new.png</file>
+        <file>image/search.png</file>
+        <file>image/web.png</file>
+        <file>image/helpDialog.png</file>
+        <file>image/9.ico</file>
+    </qresource>
+</RCC>
